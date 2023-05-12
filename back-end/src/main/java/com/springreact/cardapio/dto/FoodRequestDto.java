@@ -1,6 +1,12 @@
 package com.springreact.cardapio.dto;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
-public record FoodRequestDto(String title, String image, BigDecimal prica) {
+@Data
+public class FoodRequestDto {
+    String title;
+    String image;
+    BigDecimal price;
 }

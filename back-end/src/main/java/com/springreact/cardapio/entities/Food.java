@@ -1,6 +1,5 @@
 package com.springreact.cardapio.entities;
 
-import com.springreact.cardapio.dto.FoodRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,10 +22,4 @@ public class Food {
     private String title;
     private String image;
     private BigDecimal price;
-
-    public Food(FoodRequestDto data) {
-        this.title = data.title();
-        this.image = data.image();
-        this.price = data.prica();
-    }
 }

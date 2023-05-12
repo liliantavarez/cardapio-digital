@@ -4,31 +4,38 @@ import com.springreact.cardapio.dto.FoodRequestDto;
 import com.springreact.cardapio.dto.FoodResponseDto;
 import com.springreact.cardapio.entities.Food;
 import com.springreact.cardapio.repositories.FoodRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/food")
+@CrossOrigin(origins = "http://localhost:5173")
 public class FoodController {
 
     @Autowired
     private FoodRepository foodRepository;
 
-    @GetMapping
-    public List<FoodResponseDto> getAll() {
-        List<FoodResponseDto> foodList;
-        foodList = foodRepository.findAll().stream().map(FoodResponseDto::new).collect(Collectors.toList());
+    @Autowired
+    private ModelMapper modelMapper;
 
-        return foodList;
+    @GetMapping
+    public ResponseEntity<List<FoodResponseDto>> getAll() {
+        List<FoodResponseDto> foodList = foodRepository.findAll().stream().map(food -> modelMapper.map(food, FoodResponseDto.class)).toList();
+
+        return ResponseEntity.ok(foodList);
     }
 
     @PostMapping
-    public void saveFood(@RequestBody FoodRequestDto data) {
-        Food foodData = new Food(data);
-
+    public ResponseEntity<FoodRequestDto> saveFood(@RequestBody FoodRequestDto data, UriComponentsBuilder uriComponentsBuilder) {
+        Food foodData = modelMapper.map(data, Food.class);
         foodRepository.save(foodData);
+        var uri = uriComponentsBuilder.path("/food/{id}").buildAndExpand(foodData.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(data);
     }
 }
